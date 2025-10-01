@@ -1,0 +1,40 @@
+# Netlify configuration for SonicCanvas
+
+[build]
+  # No build command needed - static files only
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Redirect root to landing page
+[[redirects]]
+  from = "/"
+  to = "/landing.html"
+  status = 200
+
+# Enable CORS headers for all routes
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer-when-downgrade"
+
+# Cache static assets
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Don't cache HTML files
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SonicCanvas - AI Performance Visualizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">SonicCanvas</h1>
+            <p class="subtitle">AI Performance Visualizer</p>
+        </header>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <!-- File Upload -->
+            <div class="control-group">
+                <label for="audio-upload" class="btn btn-upload">
+                    <span class="btn-text">Upload Audio</span>
+                    <input type="file" id="audio-upload" accept="audio/mp3,audio/wav,audio/*" hidden>
+                </label>
+                <span id="file-name" class="file-name"></span>
+            </div>
+
+            <!-- Microphone Toggle -->
+            <div class="control-group">
+                <button id="mic-toggle" class="btn btn-mic">
+                    <span class="btn-text">🎤 Microphone</span>
+                </button>
+                <span id="mic-status" class="status-text"></span>
+            </div>
+
+            <!-- Playback Controls -->
+            <div class="control-group">
+                <button id="play-btn" class="btn btn-primary" disabled>
+                    <span class="btn-text">▶ Play</span>
+                </button>
+                <button id="stop-btn" class="btn btn-secondary" disabled>
+                    <span class="btn-text">■ Stop</span>
+                </button>
+            </div>
+
+            <!-- Gesture Control Toggle -->
+            <div class="control-group">
+                <button id="gesture-toggle" class="btn btn-gesture">
+                    <span class="btn-text">👋 Gestures</span>
+                </button>
+            </div>
+
+            <!-- Recording Controls -->
+            <div class="control-group">
+                <button id="record-toggle" class="btn btn-record">
+                    <span class="btn-text">⏺ Record</span>
+                </button>
+            </div>
+
+            <!-- Export Menu -->
+            <div class="control-group">
+                <button id="export-menu-toggle" class="btn btn-export">
+                    <span class="btn-text">💾 Export</span>
+                </button>
+            </div>
+
+            <!-- Performance Mode -->
+            <div class="control-group">
+                <button id="performance-mode-toggle" class="btn btn-performance">
+                    <span class="btn-text">⚡ Performance</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Export Menu Popup -->
+        <div id="export-menu" class="export-menu" style="display: none;">
+            <div class="export-menu-header">
+                <span class="export-menu-title">💾 Export Options</span>
+                <button id="export-menu-close" class="export-menu-close">✕</button>
+            </div>
+            <div class="export-menu-options">
+                <button id="screenshot-btn" class="export-option-btn">
+                    <span class="export-option-icon">📸</span>
+                    <div>
+                        <div class="export-option-title">Screenshot</div>
+                        <div class="export-option-desc">High-res PNG capture</div>
+                    </div>
+                </button>
+                <button id="share-btn" class="export-option-btn">
+                    <span class="export-option-icon">🔗</span>
+                    <div>
+                        <div class="export-option-title">Share Link</div>
+                        <div class="export-option-desc">Generate shareable demo</div>
+                    </div>
+                </button>
+                <button id="export-preset-btn" class="export-option-btn">
+                    <span class="export-option-icon">⚙️</span>
+                    <div>
+                        <div class="export-option-title">Export Preset</div>
+                        <div class="export-option-desc">Save settings as JSON</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Canvas for Visualization -->
+        <canvas id="visualizer-canvas"></canvas>
+
+        <!-- Preset Selector Panel -->
+        <div class="preset-panel">
+            <div class="preset-header">
+                <div id="current-preset-display" class="current-preset">
+                    <span class="preset-icon">🌌</span>
+                    <span class="preset-name">Cosmic</span>
+                </div>
+                <div class="preset-shortcuts">Press 1-5</div>
+            </div>
+            <div class="preset-grid">
+                <button class="preset-btn active" data-preset="cosmic" title="Cosmic - Press 1">
+                    <span class="preset-btn-icon">🌌</span>
+                    <span class="preset-btn-name">Cosmic</span>
+                    <span class="preset-btn-key">1</span>
+                </button>
+                <button class="preset-btn" data-preset="neural" title="Neural - Press 2">
+                    <span class="preset-btn-icon">🧠</span>
+                    <span class="preset-btn-name">Neural</span>
+                    <span class="preset-btn-key">2</span>
+                </button>
+                <button class="preset-btn" data-preset="pulse" title="Pulse - Press 3">
+                    <span class="preset-btn-icon">💫</span>
+                    <span class="preset-btn-name">Pulse</span>
+                    <span class="preset-btn-key">3</span>
+                </button>
+                <button class="preset-btn" data-preset="chaos" title="Chaos - Press 4">
+                    <span class="preset-btn-icon">⚡</span>
+                    <span class="preset-btn-name">Chaos</span>
+                    <span class="preset-btn-key">4</span>
+                </button>
+                <button class="preset-btn" data-preset="minimal" title="Minimal - Press 5">
+                    <span class="preset-btn-icon">📊</span>
+                    <span class="preset-btn-name">Minimal</span>
+                    <span class="preset-btn-key">5</span>
+                </button>
+            </div>
+            <div class="preset-effects">
+                <button id="trail-toggle" class="effect-btn" title="Toggle Trail (T)">
+                    <span id="trail-indicator">✨ Trail</span>
+                </button>
+                <button id="symmetry-toggle" class="effect-btn" title="Toggle Kaleidoscope (K)">
+                    <span id="symmetry-indicator">🔷 Kaleidoscope</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Audio Element (hidden) -->
+        <audio id="audio-element" style="display: none;"></audio>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- TensorFlow.js and HandPose -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose@0.0.7/dist/handpose.js"></script>
+
+    <!-- Application Scripts -->
+    <script src="audio-engine.js"></script>
+    <script src="visualizer.js"></script>
+    <script src="gesture-controller.js"></script>
+    <script src="presets.js"></script>
+    <script src="recorder.js"></script>
+    <script src="performance-mode.js"></script>
+    <script src="demo-mode.js"></script>
+    <script>
+        // Initialize the application
+        const audioEngine = new AudioEngine();
+        const visualizer = new Visualizer('visualizer-canvas');
+        const gestureController = new GestureController();
+        const presetManager = new PresetManager(visualizer);
+        const recorder = new Recorder(document.getElementById('visualizer-canvas'), audioEngine);
+        const performanceMode = new PerformanceMode();
+        const demoMode = new DemoMode(visualizer, presetManager, gestureController);
+
+        // File upload handler
+        document.getElementById('audio-upload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('file-name').textContent = file.name;
+                audioEngine.loadAudioFile(file);
+                document.getElementById('play-btn').disabled = false;
+                document.getElementById('stop-btn').disabled = false;
+            }
+        });
+
+        // Microphone toggle handler
+        document.getElementById('mic-toggle').addEventListener('click', async () => {
+            const isActive = await audioEngine.toggleMicrophone();
+            const statusEl = document.getElementById('mic-status');
+            const micBtn = document.getElementById('mic-toggle');
+
+            if (isActive) {
+                statusEl.textContent = '● Live';
+                statusEl.style.color = '#00ff00';
+                micBtn.classList.add('active');
+                visualizer.start();
+            } else {
+                statusEl.textContent = '';
+                micBtn.classList.remove('active');
+            }
+        });
+
+        // Play button handler
+        document.getElementById('play-btn').addEventListener('click', () => {
+            audioEngine.play();
+            visualizer.start();
+        });
+
+        // Stop button handler
+        document.getElementById('stop-btn').addEventListener('click', () => {
+            audioEngine.stop();
+            visualizer.stop();
+        });
+
+        // Gesture control toggle handler
+        document.getElementById('gesture-toggle').addEventListener('click', async () => {
+            const gestureBtn = document.getElementById('gesture-toggle');
+
+            if (gestureController.isActive()) {
+                gestureController.stop();
+                gestureBtn.classList.remove('active');
+            } else {
+                const started = await gestureController.start();
+                if (started) {
+                    gestureBtn.classList.add('active');
+                }
+            }
+        });
+
+        // Preset button handlers
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const preset = btn.getAttribute('data-preset');
+                presetManager.applyPreset(preset, true);
+            });
+        });
+
+        // Effect toggle handlers
+        document.getElementById('trail-toggle').addEventListener('click', () => {
+            visualizer.toggleTrailEffect();
+            presetManager.updatePresetDisplay();
+        });
+
+        document.getElementById('symmetry-toggle').addEventListener('click', () => {
+            visualizer.toggleRadialSymmetry();
+            presetManager.updatePresetDisplay();
+        });
+
+        // Recording toggle handler
+        document.getElementById('record-toggle').addEventListener('click', () => {
+            const recordBtn = document.getElementById('record-toggle');
+
+            if (recorder.isCurrentlyRecording()) {
+                recorder.stopRecording();
+                recordBtn.classList.remove('recording');
+                recordBtn.querySelector('.btn-text').textContent = '⏺ Record';
+            } else {
+                const started = recorder.startRecording();
+                if (started) {
+                    recordBtn.classList.add('recording');
+                    recordBtn.querySelector('.btn-text').textContent = '⏹ Stop';
+                }
+            }
+        });
+
+        // Export menu toggle
+        const exportMenu = document.getElementById('export-menu');
+        document.getElementById('export-menu-toggle').addEventListener('click', () => {
+            exportMenu.style.display = exportMenu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('export-menu-close').addEventListener('click', () => {
+            exportMenu.style.display = 'none';
+        });
+
+        // Export option handlers
+        document.getElementById('screenshot-btn').addEventListener('click', () => {
+            recorder.captureScreenshot(true);
+            exportMenu.style.display = 'none';
+        });
+
+        document.getElementById('share-btn').addEventListener('click', () => {
+            recorder.generateShareLink();
+            exportMenu.style.display = 'none';
+        });
+
+        document.getElementById('export-preset-btn').addEventListener('click', () => {
+            recorder.exportPreset(visualizer, presetManager);
+            exportMenu.style.display = 'none';
+        });
+
+        // Performance mode toggle
+        document.getElementById('performance-mode-toggle').addEventListener('click', () => {
+            performanceMode.toggle(visualizer);
+        });
+
+        // Close export menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#export-menu') && !e.target.closest('#export-menu-toggle')) {
+                exportMenu.style.display = 'none';
+            }
+        });
+
+        // Connect audio engine and gesture controller to visualizer
+        function animate() {
+            requestAnimationFrame(animate);
+            const audioData = audioEngine.getFrequencyData();
+            const gestureCommands = gestureController.getCommands();
+            visualizer.update(audioData, gestureCommands);
+        }
+        animate();
+    </script>
+</body>
+</html>
