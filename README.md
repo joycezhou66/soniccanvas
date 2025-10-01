@@ -61,7 +61,7 @@ A professional-grade audio visualization platform that combines:
 
 ## 🚀 Live Demo
 
-**[Launch SonicCanvas →](landing.html)**
+**[Launch SonicCanvas →](https://soniccanvas-1z93tyvlj-joyce-zhous-projects.vercel.app/)**
 
 Experience the full application with your own audio files or use your microphone for real-time visualization.
 
