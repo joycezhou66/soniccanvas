@@ -105,8 +105,6 @@ Experience the full application with your own audio files or use your microphone
 4. **Upload** an audio file or enable microphone input
 5. **Explore** different presets and effects
 
-That's it! No build process, no dependencies, no servers required.
-
 ### Running Locally
 
 Since this project uses Web Audio API and microphone access, it's recommended to serve it over HTTPS or localhost.
